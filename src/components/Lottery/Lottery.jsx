@@ -58,6 +58,7 @@ export default function Lottery({ account }) {
       );
       setMintingContract(mcontract);
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -72,6 +73,7 @@ export default function Lottery({ account }) {
           setIsWhitelist(account in wl_addresses);
         });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lottaryContract]);
 
   const enterLotteryHandler = async () => {
@@ -108,6 +110,7 @@ export default function Lottery({ account }) {
     }
   };
 
+  // eslint-disable-next-line no-unused-vars
   const showApes = async () => {
     try {
       const myapes = await mintingContract.listApes();
@@ -136,7 +139,7 @@ export default function Lottery({ account }) {
               HOWAPE: A very exclusive collection of 10 HoWest APE NFTs
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              ApeWest Lottery is a lottery to get a chance for a whitelist when
+              HowApe Lottery is a lottery to get a chance for a whitelist when
               the first 10 HOWest APEs will be released.
               <List>
                 <ListItem disablePadding>
@@ -203,6 +206,11 @@ export default function Lottery({ account }) {
               </Grid>
               <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
+                  current lottery tickets: 0
+                </Typography>
+              </Grid>
+              <Grid item xs>
+                <Typography variant="body2" color="text.secondary">
                   <b>Admin only:</b> Pick winner
                 </Typography>
                 {isAdmin ? (
@@ -226,7 +234,7 @@ export default function Lottery({ account }) {
             {apeList &&
               apeList.length > 0 &&
               apeList.map((item) => {
-                <div>{item}</div>;
+                return(<div>{item}</div>);
               })}
           </Item>
         </Grid>

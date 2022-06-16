@@ -1,4 +1,3 @@
-import Header from "../Header/Header";
 import Metamask from "../Metamask/MetaMask";
 import './App.css';
 

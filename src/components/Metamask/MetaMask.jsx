@@ -10,6 +10,7 @@ import "./MetaMask.css";
 import Header from "../Header/Header";
 
 function Metamask() {
+  // eslint-disable-next-line no-unused-vars
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   const [error, setError] = useState({ label: "", message: "" });
   const validChainIds = [chains.avalanche_testnet.chainId];
@@ -129,7 +130,7 @@ function Metamask() {
     {appContent}
     </div>
     <div className="footer">
-          <span> This project was created by Michiel Ghyselinck and Sebastien Pattyn for the @Home Clockhain Project from Howest</span>
+          <span> This project was created by Michiel Ghyselinck and Sebastien Pattyn for the @Home Blockhain Project from Howest</span>
         </div>
     </>
     );
