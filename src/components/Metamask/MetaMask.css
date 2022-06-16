@@ -1,0 +1,39 @@
+.mmaddress {
+  background-color: #006cff;
+  color: black;
+  padding: 5px;
+  border-radius: 5px;
+  border: none;
+}
+
+.contentwrapper {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.bloater {
+  margin: auto;
+  width: 300px;
+  display: block;
+}
+
+.mmfox {
+  height: 35px;
+  margin-right: 10px;
+  display: block;
+}
+
+.footer {
+  background-color: #006cff;
+  color: whitesmoke;
+  border-top: 1px solid #e7e7e7;
+  text-align: center;
+  padding: 20px;
+  position: fixed;
+  left: 0;
+  bottom: 0;
+  height: 60px;
+  width: 100%;
+}
