@@ -14,9 +14,14 @@ import PaidIcon from "@mui/icons-material/Paid";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import ListIcon from "@mui/icons-material/List";
-import Tooltip from '@mui/material/Tooltip';
+import Tooltip from "@mui/material/Tooltip";
 import { ethers } from "ethers";
-import { CONTRACT_ADDRESS, contract_abi } from "../Contract/contracts";
+import {
+  LOTTERY_CONTRACT_ADDRESS,
+  MINTING_CONTRACT_ADDRESS,
+  lottery_contract_abi,
+  minting_contract_abi,
+} from "../Contract/contracts";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -24,39 +29,50 @@ const Item = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(1),
 }));
 
-export default function Lottery({account}) {
-  const [contract, setContract] = useState(null);
+export default function Lottery({ account }) {
+  const [lottaryContract, setLotteryContract] = useState(null);
+  const [mintingContract, setMintingContract] = useState(null);
   const [isWhitelist, setIsWhitelist] = useState(false);
-  const [lotteryHistory, setLotteryHistory] = useState([]);
+  const [isAdmin, setIsAdmin] = useState(false);
+  const [apeList, setApeList] = useState([]);
 
   useEffect(() => {
-    if (contract === null) {
+    if (lottaryContract === null) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
 
-      const contract = new ethers.Contract(
-        CONTRACT_ADDRESS,
-        contract_abi,
+      const lcontract = new ethers.Contract(
+        LOTTERY_CONTRACT_ADDRESS,
+        lottery_contract_abi,
         provider.getSigner()
       );
-      setContract(contract);
+      setLotteryContract(lcontract);
+    }
+
+    if (mintingContract === null) {
+      const provider = new ethers.providers.Web3Provider(window.ethereum);
+
+      const mcontract = new ethers.Contract(
+        MINTING_CONTRACT_ADDRESS,
+        minting_contract_abi,
+        provider.getSigner()
+      );
+      setMintingContract(mcontract);
     }
   }, []);
 
-  const getPlayers = async () => {
-    const players = await contract.getPlayers();
-    console.log(players);
-  };
-
-  // const getHistory = async (id) => {
-  //   setLotteryHistory([]);
-  //   for (let i = parseInt(id); i > 0; i--) {
-  //     const winnerAddress = await lcContract.methods.lotteryHistory(i).call();
-  //     const historyObj = {};
-  //     historyObj.id = i;
-  //     historyObj.address = winnerAddress;
-  //     setLotteryHistory((lotteryHistory) => [...lotteryHistory, historyObj]);
-  //   }
-  // };
+  useEffect(() => {
+    if (lottaryContract !== null) {
+      lottaryContract
+        .owner()
+        .then((admin) => {
+          setIsAdmin(admin === account);
+          return lottaryContract.getWhitelist();
+        })
+        .then((wl_addresses) => {
+          setIsWhitelist(account in wl_addresses);
+        });
+    }
+  }, [lottaryContract]);
 
   const enterLotteryHandler = async () => {
     try {
@@ -65,24 +81,41 @@ export default function Lottery({account}) {
         gasLimit: 300000,
         gasPrice: null,
       };
-      await contract.enter(overridesObj);
+      await lottaryContract.enter(overridesObj);
     } catch (err) {
       console.log(err.message);
     }
   };
 
-  // const pickWinnerHandler = async () => {
-  //   console.log(`address from pick winner :: ${address}`);
-  //   try {
-  //     await lcContract.methods.pickWinner().send({
-  //       from: address,
-  //       gas: 300000,
-  //       gasPrice: null,
-  //     });
-  //   } catch (err) {
-  //     console.log(err.message);
-  //   }
-  // };
+  const pickWinnerHandler = async () => {
+    try {
+      await lottaryContract.pickWinner();
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  const mintApe = async () => {
+    try {
+      const overridesObj = {
+        value: "100000000000000000",
+        gasLimit: 300000,
+        gasPrice: null,
+      };
+      await mintingContract.mint(overridesObj);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
+
+  const showApes = async () => {
+    try {
+      const myapes = await mintingContract.listApes();
+      setApeList(myapes);
+    } catch (err) {
+      console.log(err.message);
+    }
+  };
 
   return (
     <Box sx={{ flexGrow: 1, margin: 6 }}>
@@ -141,14 +174,17 @@ export default function Lottery({account}) {
               </List>
               <Box sx={{ "& button": { m: 1 } }}>
                 {isWhitelist ? (
-                  <Button variant="contained">MINT NOW!</Button>
-                ) : (
-                  <Tooltip title="Only Whitelisted Addresses can mint HOWAPEs">
-                  <Button variant="contained" disabled>
+                  <Button variant="contained" onClick={mintApe}>
                     MINT NOW!
                   </Button>
-</Tooltip>
-
+                ) : (
+                  <Tooltip title="Only Whitelisted Addresses can mint HOWAPEs">
+                    <span>
+                      <Button variant="contained" disabled>
+                        MINT NOW!
+                      </Button>
+                    </span>
+                  </Tooltip>
                 )}
               </Box>
             </Typography>
@@ -159,47 +195,39 @@ export default function Lottery({account}) {
             <Grid item xs container direction="column" spacing={4}>
               <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
-                  Enter the lottery by sending 0.1 AVAX
+                  Enter the lottery by sending 0.01 AVAX
                 </Typography>
                 <Button variant="contained" onClick={enterLotteryHandler}>
                   Enter Lottery
                 </Button>
               </Grid>
-              {/* <Grid item xs>
+              <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
                   <b>Admin only:</b> Pick winner
                 </Typography>
-                <Button variant="contained" onClick={getPlayers}>
-                  Pick Winner
-                </Button>
-              </Grid> */}
+                {isAdmin ? (
+                  <Button variant="contained" onClick={pickWinnerHandler}>
+                    Pick Winner
+                  </Button>
+                ) : (
+                  <Button variant="contained" disabled>
+                    Pick Winner
+                  </Button>
+                )}
+              </Grid>
             </Grid>
           </Item>
         </Grid>
         <Grid item xs={4}>
           <Item sx={{ height: 256 }}>
             <Typography variant="body2" color="text.secondary">
-              Lottery History
+              My NFTs
             </Typography>
-            {/* {lotteryHistory &&
-              lotteryHistory.length > 0 &&
-              lotteryHistory.map((item) => {
-                if (lotteryId != item.id) {
-                  return (
-                    <div className="history-entry mt-3" key={item.id}>
-                      <div>Lottery #{item.id} winner:</div>
-                      <div>
-                        <a
-                          href={`https://snowtrace.io/address/${item.address}`}
-                          target="_blank"
-                        >
-                          {item.address}
-                        </a>
-                      </div>
-                    </div>
-                  );
-                }
-              })} */}
+            {apeList &&
+              apeList.length > 0 &&
+              apeList.map((item) => {
+                <div>{item}</div>;
+              })}
           </Item>
         </Grid>
       </Grid>
