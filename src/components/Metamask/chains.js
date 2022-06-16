@@ -29,6 +29,19 @@ export const chains = {
     ],
     blockExplorerUrls: ["https://snowtrace.io"],
   },
+  avalanche_testnet: {
+    chainId: `0x${Number(43113).toString(16)}`,
+    chainName: "Avalanche FUJI C-Chain",
+    nativeCurrency: {
+      name: "AVAX",
+      symbol: "AVAX",
+      decimals: 18,
+    },
+    rpcUrls: [
+      "https://api.avax-test.network/ext/bc/C/rpc",
+    ],
+    blockExplorerUrls: ["https://snowtrace.io"],
+  },
   harmony: {
     chainId: `0x${Number(1666600000).toString(16)}`,
     chainName: "Harmony Mainnet",

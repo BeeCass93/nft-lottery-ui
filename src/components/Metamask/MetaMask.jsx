@@ -3,11 +3,8 @@ import { chains } from "./chains";
 import { useEffect, useState } from "react";
 import ErrorMessage from "./ErrorMessage";
 import Button from "@mui/material/Button";
-import Card from '@mui/material/Card';
 import Box from '@mui/material/Box';
 import Lottery from '../Lottery/Lottery';
-import CardContent from '@mui/material/CardContent';
-import Typography from '@mui/material/Typography';
 
 import "./MetaMask.css";
 import Header from "../Header/Header";
@@ -15,7 +12,7 @@ import Header from "../Header/Header";
 function Metamask() {
   const { status, connect, account, chainId, ethereum } = useMetaMask();
   const [error, setError] = useState({ label: "", message: "" });
-  const validChainIds = [chains.avalanche.chainId];
+  const validChainIds = [chains.avalanche_testnet.chainId];
 
   const switchChain = async (chainId) => {
     const chain = chains[chainId];
@@ -58,6 +55,7 @@ function Metamask() {
     console.log({ chainId });
   };
 
+
   useEffect(() => {
     window.ethereum.on("chainChanged", networkChanged);
 
@@ -82,7 +80,7 @@ function Metamask() {
         <Box sx={{ '& button': { m: 1 } }}>
           <Button
           variant="contained"
-            onClick={() => handleNetworkSwitch("avalanche")}
+            onClick={() => handleNetworkSwitch("avalanche_testnet")}
           >
             Connect to Avalanche Network
           </Button>
@@ -118,7 +116,7 @@ function Metamask() {
     appContent = (
       <>
         <Header button={button}></Header>
-        <Lottery />
+        <Lottery account={account}> </Lottery>
       </>
     );
   }
