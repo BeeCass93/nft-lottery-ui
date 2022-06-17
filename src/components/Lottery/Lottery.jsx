@@ -13,6 +13,8 @@ import ListItemText from "@mui/material/ListItemText";
 import PaidIcon from "@mui/icons-material/Paid";
 import CalendarMonthIcon from "@mui/icons-material/CalendarMonth";
 import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
+import ImageList from '@mui/material/ImageList';
+import ImageListItem from '@mui/material/ImageListItem';
 import ListIcon from "@mui/icons-material/List";
 import Tooltip from "@mui/material/Tooltip";
 import { ethers } from "ethers";
@@ -22,6 +24,8 @@ import {
   lottery_contract_abi,
   minting_contract_abi,
 } from "../Contract/contracts";
+import NftCard from './nftCard';
+import axios from "axios";
 
 const Item = styled(Paper)(({ theme }) => ({
   backgroundColor: theme.palette.mode === "dark" ? "#1A2027" : "#fff",
@@ -35,8 +39,22 @@ export default function Lottery({ account }) {
   const [isWhitelist, setIsWhitelist] = useState(false);
   const [isAdmin, setIsAdmin] = useState(false);
   const [apeList, setApeList] = useState([]);
+  const [balance, setBalance] = useState();
+  const [numberOfEntries, setnumberOfEntries] = useState(0);
+
+  const hexToDecimal = (hex) => {
+    const decimal = Math.round(parseInt(hex, 16) * 100) / 100;
+    return decimal;
+  };
+
+  const weiHexToDecimal = (hex) => {
+    const decimal =
+      Math.round((parseInt(hex, 16) * 100) / 1000000000000000000) / 100;
+    return decimal;
+  };
 
   useEffect(() => {
+    setApeList([]);
     if (lottaryContract === null) {
       const provider = new ethers.providers.Web3Provider(window.ethereum);
 
@@ -58,7 +76,7 @@ export default function Lottery({ account }) {
       );
       setMintingContract(mcontract);
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   useEffect(() => {
@@ -67,13 +85,22 @@ export default function Lottery({ account }) {
         .owner()
         .then((admin) => {
           setIsAdmin(admin === account);
-          return lottaryContract.getWhitelist();
+          return lottaryContract.checkIfWhitelisted(account);
         })
-        .then((wl_addresses) => {
-          setIsWhitelist(account in wl_addresses);
+        .then((isWhitelisted) => {
+          setIsWhitelist(isWhitelisted);
+          return lottaryContract.getBalance();
+        })
+        .then((balance) => {
+          setBalance(weiHexToDecimal(balance._hex));
+          return lottaryContract.numberOfEntries(account);
+        })
+        .then((entries) => {
+          setnumberOfEntries(hexToDecimal(entries._hex));
+          setOwnerApes();
         });
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lottaryContract]);
 
   const enterLotteryHandler = async () => {
@@ -111,12 +138,46 @@ export default function Lottery({ account }) {
   };
 
   // eslint-disable-next-line no-unused-vars
-  const showApes = async () => {
-    try {
-      const myapes = await mintingContract.listApes();
-      setApeList(myapes);
-    } catch (err) {
-      console.log(err.message);
+  const setOwnerApes = async () => {
+    const apeIdList = [];
+    for (let i = 1; i <= 10; i++) {
+      try {
+        const owner = await mintingContract.ownerOf(i);
+        if (owner.toLowerCase() === account) {
+          apeIdList.push(i);
+        }
+      } catch (err) {
+        break;
+      }
+    }
+
+    for (let id of apeIdList) {
+      mintingContract
+        .tokenURI(id)
+        .then((url) => {
+          return axios.get(url);
+        })
+        .then((resp) => {
+          const img_data = {
+            url: resp.data.image,
+            name: resp.data.name,
+            description: resp.data.description,
+            id: resp.data.tokenId,
+            background: resp.data.attributes.filter((x) => {
+              return x.trait_type === "Background";
+            })[0].value,
+            border: resp.data.attributes.filter((x) => {
+              return x.trait_type === "Border";
+            })[0].value,
+            hat: resp.data.attributes.filter((x) => {
+              return x.trait_type === "Hat";
+            })[0].value,
+            ornament: resp.data.attributes.filter((x) => {
+              return x.trait_type === "Ornament";
+            })[0].value,
+          };
+          setApeList((apeList) => [...apeList, img_data]);
+        });
     }
   };
 
@@ -195,7 +256,12 @@ export default function Lottery({ account }) {
         </Grid>
         <Grid item xs={8}>
           <Item sx={{ height: 256 }}>
-            <Grid item xs container direction="column" spacing={4}>
+            <Grid item xs container direction="column" spacing={3}>
+              <Grid item xs>
+                <Typography variant="h5" color="text.secondary">
+                  <b>Total Lottery Jackpot: {balance} AVAX</b>
+                </Typography>
+              </Grid>
               <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
                   Enter the lottery by sending 0.01 AVAX
@@ -206,7 +272,7 @@ export default function Lottery({ account }) {
               </Grid>
               <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
-                  current lottery tickets: 0
+                  My current lottery tickets: {numberOfEntries}
                 </Typography>
               </Grid>
               <Grid item xs>
@@ -231,11 +297,19 @@ export default function Lottery({ account }) {
             <Typography variant="body2" color="text.secondary">
               My NFTs
             </Typography>
-            {apeList &&
-              apeList.length > 0 &&
+            <ImageList sx={{  height: 200 }} cols={1} rowHeight={180}>
+            {
               apeList.map((item) => {
-                return(<div>{item}</div>);
+                return (
+                  <ImageListItem key={item.id}>
+                <NftCard item={item}></NftCard>
+                </ImageListItem>
+
+                );
               })}
+</ImageList>
+
+
           </Item>
         </Grid>
       </Grid>

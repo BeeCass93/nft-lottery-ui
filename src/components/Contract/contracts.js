@@ -1,4 +1,4 @@
-export const LOTTERY_CONTRACT_ADDRESS = '0xff38bD02cf3843ffcBCB1214e8511695f09f0fdE'
+export const LOTTERY_CONTRACT_ADDRESS = '0xdEC0A9117ec7200122F638CF19b725e4641C4D17'
 
 export const lottery_contract_abi = [
 	{
@@ -19,6 +19,25 @@ export const lottery_contract_abi = [
 		"inputs": [],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "player",
+				"type": "address"
+			}
+		],
+		"name": "checkIfWhitelisted",
+		"outputs": [
+			{
+				"internalType": "bool",
+				"name": "",
+				"type": "bool"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
 	},
 	{
 		"inputs": [],
@@ -54,19 +73,6 @@ export const lottery_contract_abi = [
 				"internalType": "uint256",
 				"name": "",
 				"type": "uint256"
-			}
-		],
-		"stateMutability": "view",
-		"type": "function"
-	},
-	{
-		"inputs": [],
-		"name": "getWhitelist",
-		"outputs": [
-			{
-				"internalType": "address[]",
-				"name": "",
-				"type": "address[]"
 			}
 		],
 		"stateMutability": "view",
@@ -124,6 +130,25 @@ export const lottery_contract_abi = [
 		"type": "function"
 	},
 	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "",
+				"type": "address"
+			}
+		],
+		"name": "numberOfEntries",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [],
 		"name": "owner",
 		"outputs": [
@@ -158,17 +183,17 @@ export const lottery_contract_abi = [
 	{
 		"inputs": [
 			{
-				"internalType": "uint256",
+				"internalType": "address",
 				"name": "",
-				"type": "uint256"
+				"type": "address"
 			}
 		],
 		"name": "whitelist",
 		"outputs": [
 			{
-				"internalType": "address",
+				"internalType": "bool",
 				"name": "",
-				"type": "address"
+				"type": "bool"
 			}
 		],
 		"stateMutability": "view",
