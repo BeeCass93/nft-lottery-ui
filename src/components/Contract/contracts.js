@@ -1,4 +1,4 @@
-export const LOTTERY_CONTRACT_ADDRESS = '0xdEC0A9117ec7200122F638CF19b725e4641C4D17'
+export const LOTTERY_CONTRACT_ADDRESS = '0x9cFD89b5a8E012101534862e1d9afFE4ef768797'
 
 export const lottery_contract_abi = [
 	{
@@ -16,9 +16,49 @@ export const lottery_contract_abi = [
 		"type": "function"
 	},
 	{
-		"inputs": [],
+		"inputs": [
+			{
+				"internalType": "uint64",
+				"name": "subscriptionId",
+				"type": "uint64"
+			}
+		],
 		"stateMutability": "nonpayable",
 		"type": "constructor"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "address",
+				"name": "have",
+				"type": "address"
+			},
+			{
+				"internalType": "address",
+				"name": "want",
+				"type": "address"
+			}
+		],
+		"name": "OnlyCoordinatorCanFulfill",
+		"type": "error"
+	},
+	{
+		"inputs": [
+			{
+				"internalType": "uint256",
+				"name": "requestId",
+				"type": "uint256"
+			},
+			{
+				"internalType": "uint256[]",
+				"name": "randomWords",
+				"type": "uint256[]"
+			}
+		],
+		"name": "rawFulfillRandomWords",
+		"outputs": [],
+		"stateMutability": "nonpayable",
+		"type": "function"
 	},
 	{
 		"inputs": [
@@ -181,6 +221,32 @@ export const lottery_contract_abi = [
 		"type": "function"
 	},
 	{
+		"inputs": [],
+		"name": "randomResult",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
+		"inputs": [],
+		"name": "s_requestId",
+		"outputs": [
+			{
+				"internalType": "uint256",
+				"name": "",
+				"type": "uint256"
+			}
+		],
+		"stateMutability": "view",
+		"type": "function"
+	},
+	{
 		"inputs": [
 			{
 				"internalType": "address",
@@ -200,8 +266,7 @@ export const lottery_contract_abi = [
 		"type": "function"
 	}
 ]
-
-export const MINTING_CONTRACT_ADDRESS = '0xb2d8a58A68bF3007D8deeB7DFa15650D1C1389aA'
+export const MINTING_CONTRACT_ADDRESS = '0xb301F7D78a98848Cc927A0B1059E3bB56017805D'
 
 export const minting_contract_abi = [
 	{
