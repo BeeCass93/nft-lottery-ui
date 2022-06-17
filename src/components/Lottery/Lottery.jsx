@@ -84,7 +84,7 @@ export default function Lottery({ account }) {
       lottaryContract
         .owner()
         .then((admin) => {
-          setIsAdmin(admin === account);
+          setIsAdmin(admin.toLowerCase() === account);
           return lottaryContract.checkIfWhitelisted(account);
         })
         .then((isWhitelisted) => {
@@ -127,7 +127,7 @@ export default function Lottery({ account }) {
   const mintApe = async () => {
     try {
       const overridesObj = {
-        value: "100000000000000000",
+        value: "10000000000000000",
         gasLimit: 300000,
         gasPrice: null,
       };
@@ -272,7 +272,7 @@ export default function Lottery({ account }) {
               </Grid>
               <Grid item xs>
                 <Typography variant="body2" color="text.secondary">
-                  My current lottery tickets: {numberOfEntries}
+                  Number of times played with lottery: {numberOfEntries}
                 </Typography>
               </Grid>
               <Grid item xs>

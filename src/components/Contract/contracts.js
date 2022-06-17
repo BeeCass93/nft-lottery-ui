@@ -1,4 +1,4 @@
-export const LOTTERY_CONTRACT_ADDRESS = '0x9cFD89b5a8E012101534862e1d9afFE4ef768797'
+export const LOTTERY_CONTRACT_ADDRESS = '0x7942c81C98bB6fE74E7e554F00e4AAFeD3e4B523'
 
 export const lottery_contract_abi = [
 	{
@@ -266,7 +266,7 @@ export const lottery_contract_abi = [
 		"type": "function"
 	}
 ]
-export const MINTING_CONTRACT_ADDRESS = '0xb301F7D78a98848Cc927A0B1059E3bB56017805D'
+export const MINTING_CONTRACT_ADDRESS = '0x3be488ae30Eff1d9c453966f81799657BF094520'
 
 export const minting_contract_abi = [
 	{
